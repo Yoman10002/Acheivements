@@ -6,6 +6,11 @@ Welcome to my project space. This repository serves as a log of my technical jou
 
 **Most recent log date:** 28/05/2026
 
+### 🖥️ System Legend
+* **Primary Workstation (Future):** Lenovo LOQ 2025 (Ryzen 7, RTX 5050 8GB, 24GB RAM, 1TB SSD, 144Hz)
+* **Server Lab (Current):** Dell Inspiron 15 3542 (i3-4005U / 8GB RAM / 256GB SSD)
+* **Mobile/Legacy:** Samsung A50 ((Was) Experimental / Main Phone) & Legacy Samsung Odyssey (Hardware recovery unit)
+
 ## 🛠 Hardware
 | Status | Achievement | Details | Date |
 | :--- | :--- | :--- | :--- |
