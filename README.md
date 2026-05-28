@@ -2,6 +2,8 @@
 
 Welcome to my project space. This repository serves as a log of my technical journey, systems I've managed, and the projects I've built.
 
+[x] is Complete. [] is Incomplete.
+
 **Most recent log date:** 28/05/2026
 
 ## 🛠 Hardware
