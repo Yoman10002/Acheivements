@@ -38,7 +38,7 @@ Welcome to my project space. This repository serves as a log of my technical jou
 | :--- | :--- | :--- | :--- |
 | [x] | Web Development | Learned HTML and deployed landing page | 2021 |
 | [x] | Python Programming | Initial software development and scripting | 2022–23 |
-| [x] | Scratch Programming | Fundamental logic and block-based coding | 2023 |
+| [x] | Block Programming | Fundamental logic and block-based coding | 2020 |
 | [ ] | Game Development | Godot Engine project (Cookie Clicker) | 05/2026 |
 | [ ] | Minecraft Datapacks | Custom toolset development (Incomplete) | 2025–2026 |
 | [ ] | Technical Certification | Seeking industry-recognized certifications | Future |
