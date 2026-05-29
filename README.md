@@ -17,7 +17,7 @@ Welcome to my project space. This repository serves as a log of my technical jou
 | [x] | Windows Optimization | Debloated Win 11 (i3-4005U/4GB RAM/256GB SSD) | 2023–2024 |
 | [x] | Hardware Upgrade | Installed Crucial 8GB DDR3L 1600MHz RAM | 05/04/2025 |
 | [x] | Hardware Recovery | Improvised PSU power supply to retrieve data from HDD | 2026 |
-| [x] | Thermal Management | Disabled BD PROCHOT to resolve CPU throttling | 2023 |
+| [x] | Power Management | Disabled BD PROCHOT to resolve unnecessary CPU throttling | 2023 |
 
 ## 💻 Systems & Environments
 | Status | Achievement | Details | Date |
