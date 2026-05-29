@@ -7,7 +7,7 @@ Welcome to my project space. This repository serves as a log of my technical jou
 **Most recent log date:** 28/05/2026
 
 ### 🖥️ System Legend
-* **Primary Workstation (Future):** Lenovo LOQ 2025 15ahp10 (docs/hardware/lenovo-loq-15ahp10)
+* **Primary Workstation (Future):** Lenovo LOQ 2025 15ahp10 (docs/Hardware/lenovo-loq-15ahp10)
 * **Server Lab (Current):** Dell Inspiron 15 3542 
 * **Mobile/Legacy:** Samsung A50 ((Was) Experimental / (Now) Main Phone) & Legacy Samsung Odyssey (Random Tower Unit)
 
