@@ -21,7 +21,7 @@ My journey began with a machine most would have discarded years ago. This Dell I
 ### Next Steps
 Before this machine retires, it has one final mission: 
 * [ ] Preservation (Keep it owrking as long as possible)
-* [x] Windows 10 LTSC ([x]) / Linux Mint XFCE migration
+* [x] Windows 10 LTSC / Linux Mint XFCE migration
 * [ ] Archival as a symbol of my beginnings.
 
 ---
