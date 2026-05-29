@@ -45,7 +45,7 @@ Before this machine retires, it has one final mission:
     * Manually disabled non-essential services via `services.msc`.
 * **Result:** Reduced idle RAM usage to **2.7GB–3GB**; eliminated background CPU spikes.
 
-## 2. Power & Thermal Management (BD PROCHOT)
+## 2. Power Management (BD PROCHOT)
 * **The Problem:** Hardware wear on the charging port resulted in the identification pin failing to make contact. The Dell BIOS responded by triggering an aggressive **BD PROCHOT** (Bi-Directional Processor Hot) signal, locking the CPU frequency to 800MHz.
 * **The Solution:**
     * Deployed **ThrottleStop** to override the BIOS power-state management.
