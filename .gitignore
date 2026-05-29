@@ -9,6 +9,14 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE settings
+.idea/
+.vscode/
+
 # Runtime data
 pids
 *.pid
