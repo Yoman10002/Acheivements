@@ -2,7 +2,7 @@
 
 ## Overview
 * **Machine:** Dell Inspiron 15 3542 (i3-4005U / 8GB RAM)
-* **OS** Windows 11 21H2
+* **OS**: Windows 11 21H2
 * **Objective:** Reduce system latency and resolve aggressive BIOS throttling.
 
 ---
