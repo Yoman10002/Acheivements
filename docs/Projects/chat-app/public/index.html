@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#1e1f22">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Chat</title>
+  <link rel="stylesheet" href="/theme.css">
+  <style>
+    #auth-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100dvh; padding: 1rem;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .auth-card {
+      background: var(--surface); border-radius: 8px;
+      padding: 1.5rem; width: 100%; max-width: 400px;
+    }
+    .auth-card h1 { font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: .25rem; }
+    .auth-card .sub { text-align: center; color: var(--muted); font-size: .85rem; margin-bottom: 1.25rem; }
+    .tabs { display: flex; gap: 0; margin-bottom: 1rem; background: var(--bg); border-radius: 4px; padding: 3px; }
+    .tab { flex: 1; padding: .5rem; border-radius: 3px; font-size: .85rem; font-weight: 600; color: var(--muted); background: transparent; }
+    .tab.active { background: var(--accent); color: #fff; }
+    .auth-card input {
+      width: 100%; padding: .75rem; background: var(--bg);
+      border-radius: 4px; margin-bottom: .75rem; font-size: 1rem;
+    }
+    .auth-card .btn-primary {
+      width: 100%; padding: .75rem; background: var(--accent);
+      border-radius: 4px; font-weight: 600; color: #fff;
+    }
+    .userid-hint { font-size: .75rem; color: var(--muted); text-align: center; margin-top: .75rem; }
+
+    html, body.chat-app { height: 100%; overflow: hidden; }
+    #chat-screen { display: none; height: 100dvh; height: 100vh; position: relative; overflow: hidden; }
+
+    /* ── List panel ── */
+    .list-panel {
+      display: flex; flex-direction: column;
+      min-height: 0; background: var(--surface);
+      width: 100%;
+    }
+    .list-top {
+      padding: .75rem 1rem;
+      padding-top: calc(.75rem + env(safe-area-inset-top));
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .list-top h1 { font-size: 1.1rem; font-weight: 700; }
+    .list-top .uid-row {
+      display: flex; align-items: center; gap: .5rem; margin-top: .35rem;
+      font-size: .75rem; color: var(--muted);
+    }
+    .list-top .uid-row code {
+      color: var(--accent); font-size: .7rem;
+      background: var(--bg); padding: .15rem .4rem; border-radius: 3px;
+    }
+    .list-top-actions { display: flex; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+    .list-top-actions button {
+      font-size: .75rem; color: var(--muted); padding: .35rem .5rem;
+      background: var(--bg); border-radius: 4px;
+    }
+
+    .list-tabs {
+      display: none;
+      gap: 0;
+      padding: .5rem .75rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .list-tab {
+      flex: 1;
+      padding: .45rem .5rem;
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 4px;
+      position: relative;
+    }
+    .list-tab.active {
+      color: var(--text);
+      background: var(--hover-bg);
+    }
+    .list-tab .tab-badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      min-width: 16px; height: 16px;
+      background: var(--danger);
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 700;
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+    .list-tab .tab-badge.show { display: flex; }
+
+    .empty-hint {
+      padding: 1.5rem 1rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+    .empty-hint button {
+      margin-top: .75rem;
+      padding: .55rem 1rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: .85rem;
+    }
+
+    .bottom-tabs {
+      display: none;
+      flex-shrink: 0;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      padding-top: .35rem;
+      /* Fallback for Samsung/Android nav bar (safe-area often 0) */
+      padding-bottom: max(3rem, calc(.75rem + env(safe-area-inset-bottom, 0px)));
+      z-index: 40;
+    }
+    .bottom-tab {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: .5rem .25rem .35rem;
+      color: var(--muted);
+      font-size: .65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .02em; position: relative;
+      background: transparent;
+      border-radius: 0;
+      transition: color .15s, background .15s;
+    }
+    .bottom-tab svg { width: 24px; height: 24px; fill: currentColor; opacity: .55; transition: opacity .15s, fill .15s; }
+    .bottom-tab.active {
+      color: var(--accent);
+      background: rgba(88, 101, 242, 0.12);
+    }
+    .bottom-tab.active svg { opacity: 1; fill: var(--accent); }
+    .bottom-tab .tab-badge { top: 2px; right: 18%; }
+
+    .list-scroll {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: .5rem 0;
+    }
+    .section-label {
+      padding: .5rem 1rem .25rem;
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      color: var(--muted); letter-spacing: .03em;
+    }
+    .list-item {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .65rem 1rem; margin: 0 .5rem;
+      border-radius: 4px; min-height: 44px;
+      text-align: left; width: calc(100% - 1rem);
+      background: transparent; color: var(--muted);
+    }
+    .list-item:active, .list-item.active {
+      background: var(--hover-bg); color: var(--text);
+    }
+    .list-item.active { background: var(--hover-bg); }
+    .list-item .hash { color: var(--muted); font-size: 1.1rem; font-weight: 500; width: 1.25rem; }
+    .list-item .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 600; flex-shrink: 0;
+    }
+    .list-item .meta { flex: 1; min-width: 0; }
+    .list-item .meta b { display: block; font-size: .95rem; color: var(--text); font-weight: 500; }
+    .list-item .meta span { font-size: .75rem; color: var(--muted); }
+    .badge-pending {
+      background: var(--danger); color: #fff;
+      font-size: .65rem; padding: .2rem .45rem; border-radius: 10px; font-weight: 700;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .inline-form { padding: .5rem 1rem; }
+    .inline-form input {
+      width: 100%; padding: .6rem .75rem; background: var(--bg);
+      border-radius: 4px; margin-bottom: .5rem; font-size: .9rem;
+    }
+    .inline-form button {
+      width: 100%; padding: .6rem; background: var(--accent);
+      border-radius: 4px; font-weight: 600; color: #fff;
+    }
+    .friend-picks { max-height: 120px; overflow-y: auto; margin-bottom: .5rem; }
+    .friend-picks label {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .35rem 0; font-size: .85rem; color: var(--text);
+    }
+
+    /* ── Chat panel ── */
+    .chat-panel {
+      display: flex; flex-direction: column;
+      height: 100%; background: var(--surface2);
+      position: fixed; inset: 0; z-index: 50;
+      transform: translateX(100%);
+      transition: transform .22s ease-out;
+    }
+    .chat-panel.open { transform: translateX(0); }
+
+    .chat-header {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .6rem .75rem;
+      padding-top: calc(.6rem + env(safe-area-inset-top));
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      min-height: 48px; flex-shrink: 0;
+    }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; color: var(--text); flex-shrink: 0;
+    }
+    .back-btn svg { width: 24px; height: 24px; }
+    .chat-header h2 { font-size: 1rem; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-header .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex-shrink: 0;
+    }
+    .chat-header .status-dot.off { background: var(--danger); }
+
+    .messages {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: .75rem 1rem 1rem;
+    }
+    .msg-row {
+      display: flex; gap: .65rem; margin-bottom: .15rem;
+      padding: .2rem 0;
+    }
+    .msg-row .avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; font-weight: 600; flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .msg-row.continued .avatar { visibility: hidden; }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-head {
+      display: flex; align-items: baseline; gap: .5rem; margin-bottom: 2px;
+    }
+    .msg-head .name { font-size: .9rem; font-weight: 600; }
+    .msg-head .time { font-size: .65rem; color: var(--muted); }
+    .msg-text { font-size: .95rem; line-height: 1.375; word-break: break-word; }
+    .msg-system {
+      text-align: center; color: var(--muted);
+      font-size: .75rem; padding: .5rem 0;
+    }
+
+    .input-bar {
+      flex-shrink: 0;
+      padding: .5rem .75rem;
+      padding-bottom: calc(.5rem + env(safe-area-inset-bottom));
+      background: var(--surface2);
+    }
+    .input-wrap {
+      display: flex; align-items: flex-end; gap: .5rem;
+      background: var(--card); border-radius: 8px; padding: .35rem .5rem;
+    }
+    .input-wrap input {
+      flex: 1; padding: .5rem .25rem; background: transparent;
+      font-size: 1rem; min-height: 24px; max-height: 120px;
+    }
+    .input-wrap button {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .input-wrap button svg { width: 18px; height: 18px; }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.6); z-index: 300;
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--surface); border-radius: 8px;
+      padding: 1.25rem; max-width: 360px; width: 100%;
+    }
+    .modal h3 { margin-bottom: .5rem; }
+    .modal input {
+      width: 100%; padding: .65rem; background: var(--bg);
+      border-radius: 4px; margin: .75rem 0;
+    }
+    .modal .btn-row { display: flex; gap: .5rem; }
+    .modal .btn-row button { flex: 1; padding: .6rem; border-radius: 4px; font-weight: 600; }
+
+    /* ═══ PHONE LAYOUT (touch / narrow) ═══ */
+    body.phone-layout #chat-screen {
+      display: flex;
+      flex-direction: column;
+    }
+    body.phone-layout .list-panel {
+      flex: 1;
+      height: 100%;
+      min-height: 0;
+    }
+    body.phone-layout .bottom-tabs {
+      display: flex;
+      padding-bottom: max(
+        3rem,
+        calc(.75rem + env(safe-area-inset-bottom, 0px) + var(--nav-inset-extra, 0px))
+      );
+    }
+    body.phone-layout.is-android .bottom-tabs {
+      padding-bottom: max(
+        3.25rem,
+        calc(1rem + env(safe-area-inset-bottom, 0px) + var(--nav-inset-extra, 0px))
+      );
+    }
+    body.phone-layout .list-tabs {
+      display: none;
+    }
+    body.phone-layout .chat-panel {
+      position: fixed;
+      transform: translateX(100%);
+    }
+    body.phone-layout .chat-panel .input-bar {
+      padding-bottom: max(
+        .75rem,
+        calc(.5rem + env(safe-area-inset-bottom, 0px) + var(--nav-inset-extra, 0px))
+      );
+    }
+    body.phone-layout .chat-panel.open {
+      transform: translateX(0);
+    }
+    body.phone-layout .back-btn {
+      display: flex;
+    }
+    body.phone-layout .theme-fab {
+      bottom: calc(
+        5.5rem + env(safe-area-inset-bottom, 0px) + var(--nav-inset-extra, 0px)
+      );
+    }
+    body.phone-layout .list-scroll {
+      padding-bottom: .25rem;
+    }
+
+    /* ═══ DESKTOP / TABLET LAYOUT (side-by-side) ═══ */
+    body.desktop-layout #chat-screen {
+      display: flex;
+      flex-direction: row;
+    }
+    body.desktop-layout .list-panel {
+      width: 260px;
+      max-width: 32vw;
+      min-width: 220px;
+      height: 100%;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    body.desktop-layout .list-tabs {
+      display: flex;
+    }
+    body.desktop-layout .bottom-tabs {
+      display: none;
+    }
+    body.desktop-layout .list-tab.active {
+      color: #fff;
+      background: var(--accent);
+    }
+    body.desktop-layout .list-tab:not(.active) {
+      color: var(--muted);
+      background: transparent;
+    }
+    body.desktop-layout .chat-panel {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      transform: none !important;
+    }
+    body.desktop-layout .chat-panel.open {
+      transform: none;
+    }
+    body.desktop-layout .back-btn {
+      display: none;
+    }
+    body.desktop-layout .theme-fab {
+      bottom: 1rem;
+      right: 1rem;
+    }
+  </style>
+</head>
+<body class="chat-app">
+  <div id="auth-screen">
+    <div class="auth-card">
+      <h1>Chat</h1>
+      <p class="sub">Sign in to message friends and join rooms</p>
+      <div class="tabs">
+        <button type="button" class="tab active" data-tab="login">Login</button>
+        <button type="button" class="tab" data-tab="register">Register</button>
+      </div>
+      <form id="auth-form">
+        <input id="auth-user" type="text" placeholder="Display name" maxlength="24" autocomplete="username" required>
+        <input id="auth-pass" type="password" placeholder="Password" autocomplete="current-password" required>
+        <button type="submit" class="btn-primary" id="auth-submit">Login</button>
+      </form>
+      <p class="userid-hint">You get a unique User ID for friends &amp; DMs</p>
+    </div>
+  </div>
+
+  <div id="chat-screen">
+    <div class="list-panel" id="list-panel">
+      <div class="list-top">
+        <h1>Chat</h1>
+        <div class="uid-row">
+          <span id="my-username">—</span>
+          <code id="my-userid" title="Tap to copy">——</code>
+        </div>
+        <div class="list-top-actions">
+          <button type="button" id="delete-account-btn">Delete account</button>
+          <button type="button" id="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <div class="list-tabs">
+        <button type="button" class="list-tab active" data-tab="rooms" onclick="switchListTab('rooms')">Channels</button>
+        <button type="button" class="list-tab" data-tab="dms" onclick="switchListTab('dms')">DMs</button>
+        <button type="button" class="list-tab" data-tab="friends" onclick="switchListTab('friends')">
+          Friends
+          <span class="tab-badge" id="pending-badge"></span>
+        </button>
+      </div>
+
+      <div class="list-scroll">
+        <div class="tab-content active" id="tab-rooms">
+          <div class="section-label">Text channels</div>
+          <div id="room-list"></div>
+          <div class="inline-form">
+            <input id="new-room-name" placeholder="New channel name" maxlength="30">
+            <div class="friend-picks" id="room-friend-picks"></div>
+            <button type="button" onclick="createRoom()">Create channel</button>
+          </div>
+        </div>
+        <div class="tab-content" id="tab-dms">
+          <div class="section-label">Direct messages</div>
+          <p style="padding:0 1rem .5rem;font-size:.75rem;color:var(--muted);">Message friends only. Share your ID: <code id="share-id" style="color:var(--accent);cursor:pointer"></code></p>
+          <div id="dm-list"></div>
+        </div>
+        <div class="tab-content" id="tab-friends">
+          <div class="section-label">Add friend</div>
+          <div class="inline-form" style="padding-top:0">
+            <input id="add-friend-id" placeholder="Enter their 8-character User ID" maxlength="8" style="text-transform:uppercase" autocomplete="off">
+            <button type="button" onclick="sendFriendRequest()">Send friend request</button>
+          </div>
+          <div class="section-label">Pending requests</div>
+          <div id="pending-list"></div>
+          <div class="section-label">All friends</div>
+          <div id="friend-list"></div>
+        </div>
+      </div>
+
+      <nav class="bottom-tabs">
+        <button type="button" class="bottom-tab active" data-tab="rooms" onclick="switchListTab('rooms')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.88657 21C5.57547 21 5.3399 20.7189 5.39427 20.4126L6.00001 17H2.59511C2.28449 17 2.04905 16.7198 2.10259 16.4135L2.27759 15.4135C2.31946 15.1746 2.52722 15 2.77011 15H6.35001L7.41001 9H4.00511C3.69449 9 3.45905 8.71977 3.51259 8.41345L3.68759 7.41345C3.72946 7.1746 3.93722 7 4.18011 7H7.76001L8.88001 1H19.88L17.32 15H21.88L19.32 21H5.88657Z"/></svg>
+          Channels
+        </button>
+        <button type="button" class="bottom-tab" data-tab="dms" onclick="switchListTab('dms')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.3 4.9a1 1 0 0 0-1.4 0L12 10.8 6.1 4.9a1 1 0 0 0-1.4 1.4l5.9 5.9-5.9 5.9a1 1 0 1 0 1.4 1.4l5.9-5.9 5.9 5.9a1 1 0 0 0 1.4-1.4l-5.9-5.9 5.9-5.9a1 1 0 0 0 0-1.4z" transform="rotate(45 12 12) scale(.85)" style="display:none"/><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+          DMs
+        </button>
+        <button type="button" class="bottom-tab" data-tab="friends" onclick="switchListTab('friends')" style="position:relative">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-8 2c-3.31 0-6 2.69-6 6h2c0-2.21 1.79-4 4-4s4 1.79 4 4h2c0-3.31-2.69-6-6-6zm8 0c-2.67 0-5.19 1.34-6.67 3.56L18 18.5c1.2-1.6 3.08-2.5 5-2.5V14z"/></svg>
+          Friends
+          <span class="tab-badge" id="pending-badge-mobile"></span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="chat-panel open" id="chat-panel">
+      <header class="chat-header">
+        <button type="button" class="back-btn" id="back-btn" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h2 id="view-title">#general</h2>
+        <span class="status-dot" id="status-dot"></span>
+      </header>
+      <div class="messages" id="messages"></div>
+      <div class="input-bar">
+        <form id="msg-form" class="input-wrap">
+          <input id="msg-input" type="text" placeholder="Message #general" autocomplete="off" enterkeyhint="send">
+          <button type="submit" aria-label="Send">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <button type="button" class="theme-fab" id="theme-toggle" aria-label="Toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z" fill="currentColor" stroke="none"/></svg>
+  </button>
+
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal">
+      <h3>Delete account?</h3>
+      <p style="font-size:.85rem;color:var(--muted);">This cannot be undone.</p>
+      <input id="delete-password" type="password" placeholder="Your password">
+      <div class="btn-row">
+        <button type="button" style="background:var(--card);" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" style="background:var(--danger);color:#fff;" onclick="confirmDeleteAccount()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const COLORS = ['c0','c1','c2','c3','c4','c5','c6','c7'];
+    let ws, token, userId, username;
+    let currentRoom = 'general', dmWith = null, chatMode = 'room';
+    let friends = [], pendingRequests = [], authMode = 'login';
+    let lastMsgAuthor = null;
+
+    function isPhoneLayout() {
+      const w = window.innerWidth;
+      if (w >= 1024) return false;
+      if (w < 768) return true;
+      return window.matchMedia('(pointer: coarse)').matches;
+    }
+
+    function updateNavInset() {
+      let extra = 0;
+      const vv = window.visualViewport;
+      if (vv) {
+        extra = Math.max(0, Math.round(window.innerHeight - vv.height - (vv.offsetTop || 0)));
+      }
+      if (/Android/i.test(navigator.userAgent) && extra < 40) {
+        extra = Math.max(extra, 48);
+      }
+      document.documentElement.style.setProperty('--nav-inset-extra', extra + 'px');
+      document.body.classList.toggle('is-android', /Android/i.test(navigator.userAgent));
+    }
+
+    function applyLayout() {
+      const phone = isPhoneLayout();
+      document.body.classList.toggle('phone-layout', phone);
+      document.body.classList.toggle('desktop-layout', !phone);
+      updateNavInset();
+      const chat = document.getElementById('chat-screen');
+      const panel = document.getElementById('chat-panel');
+      if (!chat) return;
+      if (phone) {
+        chat.style.display = 'flex';
+        if (!panel.classList.contains('open')) {
+          /* show channel list first on phone */
+        }
+      } else {
+        chat.style.display = 'flex';
+        panel.classList.add('open');
+      }
+    }
+
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('chat-theme', t);
+      document.querySelector('meta[name="theme-color"]').content = t === 'dark' ? '#1e1f22' : '#f2f3f5';
+    }
+    applyTheme(localStorage.getItem('chat-theme') || 'dark');
+    document.getElementById('theme-toggle').onclick = () => {
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    };
+
+    document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      authMode = t.dataset.tab;
+      document.getElementById('auth-submit').textContent = authMode === 'login' ? 'Login' : 'Register';
+    });
+
+    function toast(msg, ok) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (ok ? ' ok' : '');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function colorClass(n) { let h=0; for(const c of n) h=(h*31+c.charCodeAt(0))|0; return COLORS[Math.abs(h)%8]; }
+    function timeStr(ts) { return new Date(ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+    function initials(name) { return (name || '?').slice(0, 2).toUpperCase(); }
+    function nameForUser(id) {
+      if (id === userId) return username;
+      const f = friends.find(x => x.userId === id);
+      return f ? f.username : id;
+    }
+
+    function switchListTab(tab) {
+      document.querySelectorAll('.bottom-tab, .list-tab').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tab);
+      });
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      if (isPhoneLayout() && tab !== 'rooms') closeChatPanel();
+    }
+
+    function updatePendingBadge() {
+      const n = pendingRequests.length;
+      const text = n > 9 ? '9+' : String(n);
+      ['pending-badge', 'pending-badge-mobile'].forEach(id => {
+        const badge = document.getElementById(id);
+        if (!badge) return;
+        if (n > 0) { badge.textContent = text; badge.classList.add('show'); }
+        else badge.classList.remove('show');
+      });
+    }
+
+    function openChatPanel() {
+      document.getElementById('chat-panel').classList.add('open');
+    }
+    function closeChatPanel() {
+      if (isPhoneLayout()) document.getElementById('chat-panel').classList.remove('open');
+    }
+    document.getElementById('back-btn').onclick = closeChatPanel;
+
+    document.getElementById('auth-form').onsubmit = async (e) => {
+      e.preventDefault();
+      const res = await fetch('/api/auth/' + authMode, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('auth-user').value.trim(),
+          password: document.getElementById('auth-pass').value
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Failed');
+      token = data.token; userId = data.userId; username = data.username;
+      localStorage.setItem('chat-token', token);
+      enterChat();
+    };
+
+    function enterChat() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('my-username').textContent = username;
+      document.getElementById('my-userid').textContent = userId;
+      const copyId = () => { navigator.clipboard.writeText(userId); toast('User ID copied', true); };
+      document.getElementById('my-userid').onclick = copyId;
+      const shareEl = document.getElementById('share-id');
+      if (shareEl) { shareEl.textContent = userId; shareEl.onclick = copyId; }
+      applyLayout();
+      if (isPhoneLayout()) {
+        document.getElementById('chat-panel').classList.remove('open');
+      } else {
+        document.getElementById('chat-panel').classList.add('open');
+      }
+      connect();
+    }
+
+    const savedToken = localStorage.getItem('chat-token');
+    if (savedToken) {
+      fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + savedToken } })
+        .then(r => r.json()).then(d => {
+          if (d.userId) { token = savedToken; userId = d.userId; username = d.username; enterChat(); }
+        });
+    }
+
+    document.getElementById('logout-btn').onclick = async () => {
+      if (ws) ws.close();
+      await fetch('/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
+      localStorage.removeItem('chat-token');
+      location.reload();
+    };
+    document.getElementById('delete-account-btn').onclick = () => {
+      document.getElementById('delete-modal').classList.add('show');
+      document.getElementById('delete-password').value = '';
+    };
+    function closeDeleteModal() { document.getElementById('delete-modal').classList.remove('show'); }
+    async function confirmDeleteAccount() {
+      const res = await fetch('/api/auth/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ token, password: document.getElementById('delete-password').value })
+      });
+      const data = await res.json();
+      if (!res.ok) return toast(data.error || 'Failed');
+      localStorage.removeItem('chat-token');
+      location.reload();
+    }
+
+    function connect() {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      ws = new WebSocket(`${proto}://${location.host}/ws`);
+      ws.onopen = () => {
+        document.getElementById('status-dot').classList.remove('off');
+        ws.send(JSON.stringify({ type: 'auth', token }));
+      };
+      ws.onclose = () => {
+        document.getElementById('status-dot').classList.add('off');
+        setTimeout(connect, 3000);
+      };
+      ws.onmessage = (e) => handleWS(JSON.parse(e.data));
+    }
+
+    function setChatHeader(title, placeholder) {
+      document.getElementById('view-title').textContent = title;
+      document.getElementById('msg-input').placeholder = placeholder;
+    }
+
+    function handleWS(d) {
+      switch (d.type) {
+        case 'init':
+          currentRoom = d.room;
+          friends = d.friends || [];
+          pendingRequests = d.friendRequests || [];
+          chatMode = 'room';
+          dmWith = null;
+          renderRooms(d.rooms);
+          renderFriends();
+          setChatHeader('#' + d.room, 'Message #' + d.room);
+          renderMessages(d.messages, 'room');
+          if (!isPhoneLayout()) openChatPanel();
+          break;
+        case 'message':
+          if (chatMode === 'room' && d.room === currentRoom) appendMessage(d, false);
+          break;
+        case 'room_switched':
+          currentRoom = d.room;
+          chatMode = 'room';
+          dmWith = null;
+          setChatHeader('#' + d.room, 'Message #' + d.room);
+          renderMessages(d.messages, 'room');
+          renderRooms(document._roomsCache || []);
+          openChatPanel();
+          break;
+        case 'user_joined':
+        case 'user_left':
+          if (chatMode === 'room' && d.room === currentRoom)
+            appendSystem(d.type === 'user_joined' ? d.username + ' joined' : d.username + ' left');
+          break;
+        case 'dm':
+          if (chatMode === 'dm' && dmWith && (d.fromUserId === dmWith || d.toUserId === dmWith))
+            appendMessage({
+              username: nameForUser(d.fromUserId),
+              text: d.text,
+              timestamp: d.timestamp,
+              userId: d.fromUserId
+            }, d.fromUserId === userId);
+          break;
+        case 'dm_history':
+          renderMessages(d.messages.map(m => ({
+            username: nameForUser(m.from_user),
+            text: m.text,
+            timestamp: m.timestamp,
+            userId: m.from_user
+          })), 'dm');
+          openChatPanel();
+          break;
+        case 'friend_request':
+          if (!pendingRequests.some(p => p.userId === d.fromUserId)) {
+            pendingRequests.push({ userId: d.fromUserId, username: d.fromUsername });
+          }
+          renderFriends();
+          toast('Friend request from ' + d.fromUsername);
+          switchListTab('friends');
+          break;
+        case 'friend_accepted':
+          if (!friends.some(f => f.userId === d.userId)) {
+            friends.push({ userId: d.userId, username: d.username });
+          }
+          pendingRequests = pendingRequests.filter(p => p.userId !== d.userId);
+          renderFriends();
+          toast('Now friends with ' + d.username, true);
+          break;
+        case 'friend_sent':
+          toast('Request sent', true);
+          break;
+        case 'friends_list':
+          friends = d.friends;
+          renderFriends();
+          break;
+        case 'room_list':
+          renderRooms(d.rooms);
+          break;
+        case 'room_created':
+          renderRooms(d.rooms);
+          toast('Channel created', true);
+          break;
+        case 'error':
+          toast(d.message);
+          break;
+        case 'kicked':
+        case 'account_deleted':
+          localStorage.removeItem('chat-token');
+          toast(d.type === 'kicked' ? 'Kicked' : 'Account deleted');
+          setTimeout(() => location.reload(), 1500);
+          break;
+      }
+    }
+
+    function renderRooms(rooms) {
+      document._roomsCache = rooms;
+      document.getElementById('room-list').innerHTML = rooms.map(r =>
+        `<button type="button" class="list-item${r.name === currentRoom && chatMode === 'room' ? ' active' : ''}" onclick="switchRoom('${esc(r.name)}')">
+          <span class="hash">#</span>
+          <div class="meta"><b>${esc(r.name)}</b><span>${r.isPrivate ? 'Private' : 'Text channel'}</span></div>
+        </button>`
+      ).join('');
+      renderRoomFriendPicks();
+    }
+
+    function renderRoomFriendPicks() {
+      const el = document.getElementById('room-friend-picks');
+      el.innerHTML = friends.length
+        ? friends.map(f => `<label><input type="checkbox" value="${esc(f.userId)}"> ${esc(f.username)}</label>`).join('')
+        : '<span style="font-size:.75rem;color:var(--muted);">Add friends to invite</span>';
+    }
+
+    function renderFriends() {
+      updatePendingBadge();
+
+      document.getElementById('pending-list').innerHTML = pendingRequests.length
+        ? pendingRequests.map(p =>
+          `<div class="list-item" style="cursor:default">
+            <div class="avatar">${initials(p.username)}</div>
+            <div class="meta"><b>${esc(p.username)}</b><span>ID: ${esc(p.userId)}</span></div>
+            <button type="button" class="theme-btn" onclick="acceptFriend('${esc(p.userId)}')">Accept</button>
+          </div>`
+        ).join('')
+        : '<p style="padding:0 1rem;font-size:.8rem;color:var(--muted);">No pending requests</p>';
+
+      document.getElementById('friend-list').innerHTML = friends.length
+        ? friends.map(f =>
+          `<button type="button" class="list-item" onclick="openDM('${esc(f.userId)}','${esc(f.username)}')">
+            <div class="avatar">${initials(f.username)}</div>
+            <div class="meta"><b>${esc(f.username)}</b><span>ID: ${esc(f.userId)} · Tap to DM</span></div>
+          </button>`
+        ).join('')
+        : `<div class="empty-hint">No friends yet.<br>Ask someone for their User ID (shown at the top), then add them here.
+          <br><button type="button" onclick="document.getElementById('add-friend-id').focus()">Add a friend</button></div>`;
+
+      document.getElementById('dm-list').innerHTML = friends.length
+        ? friends.map(f =>
+          `<button type="button" class="list-item${dmWith === f.userId && chatMode === 'dm' ? ' active' : ''}" onclick="openDM('${esc(f.userId)}','${esc(f.username)}')">
+            <div class="avatar">${initials(f.username)}</div>
+            <div class="meta"><b>${esc(f.username)}</b><span>@${esc(f.userId)}</span></div>
+          </button>`
+        ).join('')
+        : `<div class="empty-hint">Direct messages are only with friends.<br>Add a friend first, then chat here.
+          <br><button type="button" onclick="switchListTab('friends')">Go to Friends</button></div>`;
+      renderRoomFriendPicks();
+    }
+
+    function switchRoom(room) {
+      ws.send(JSON.stringify({ type: 'switch_room', room }));
+      chatMode = 'room';
+      openChatPanel();
+    }
+
+    function openDM(id, name) {
+      dmWith = id;
+      chatMode = 'dm';
+      setChatHeader(name, 'Message @' + name);
+      document.getElementById('messages').innerHTML = '';
+      lastMsgAuthor = null;
+      ws.send(JSON.stringify({ type: 'dm_history', withUserId: id }));
+      renderFriends();
+      switchListTab('dms');
+      openChatPanel();
+    }
+
+    function createRoom() {
+      const name = document.getElementById('new-room-name').value.trim().toLowerCase().replace(/[^a-z0-9-_]/g, '');
+      if (!name) return toast('Enter a channel name');
+      const memberIds = [...document.querySelectorAll('#room-friend-picks input:checked')].map(cb => cb.value);
+      ws.send(JSON.stringify({ type: 'create_room', name, memberIds }));
+      document.getElementById('new-room-name').value = '';
+    }
+
+    function renderMessages(msgs, mode) {
+      const el = document.getElementById('messages');
+      el.innerHTML = '';
+      lastMsgAuthor = null;
+      msgs.forEach(m => {
+        const author = mode === 'dm' ? m.username : m.username;
+        const isMe = m.userId === userId || author === 'You';
+        appendMessage({
+          username: isMe ? username : author,
+          text: m.text,
+          timestamp: m.timestamp,
+          userId: m.userId
+        }, isMe);
+      });
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function appendMessage(m, isMe) {
+      const el = document.getElementById('messages');
+      const author = isMe ? username : (m.username || '?');
+      const continued = lastMsgAuthor === author;
+      lastMsgAuthor = author;
+      const row = document.createElement('div');
+      row.className = 'msg-row' + (continued ? ' continued' : '');
+      row.innerHTML = continued
+        ? `<div class="avatar"></div><div class="msg-body"><div class="msg-text">${esc(m.text)}</div></div>`
+        : `<div class="avatar">${initials(author)}</div><div class="msg-body">
+            <div class="msg-head"><span class="name ${colorClass(author)}">${esc(author)}</span><span class="time">${timeStr(m.timestamp)}</span></div>
+            <div class="msg-text">${esc(m.text)}</div></div>`;
+      el.appendChild(row);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function appendSystem(text) {
+      const el = document.getElementById('messages');
+      const d = document.createElement('div');
+      d.className = 'msg-system';
+      d.textContent = text;
+      el.appendChild(d);
+      lastMsgAuthor = null;
+    }
+
+    document.getElementById('msg-form').onsubmit = (e) => {
+      e.preventDefault();
+      const text = document.getElementById('msg-input').value.trim();
+      if (!text || !ws || ws.readyState !== 1) return;
+      if (chatMode === 'dm' && dmWith) {
+        ws.send(JSON.stringify({ type: 'dm_send', toUserId: dmWith, text }));
+      } else {
+        ws.send(JSON.stringify({ type: 'message', text }));
+      }
+      document.getElementById('msg-input').value = '';
+    };
+
+    async function sendFriendRequest() {
+      const id = document.getElementById('add-friend-id').value.trim().toUpperCase();
+      if (!id) return toast('Enter a User ID');
+      if (id === userId) return toast('That is your own ID');
+      if (friends.some(f => f.userId === id)) return toast('Already friends');
+      const lookup = await fetch('/api/auth/lookup?id=' + id).then(r => r.json());
+      if (lookup.error) return toast('User not found — check the 8-character ID');
+      if (!ws || ws.readyState !== 1) return toast('Not connected');
+      ws.send(JSON.stringify({ type: 'friend_request', toUserId: id }));
+      document.getElementById('add-friend-id').value = '';
+      toast('Request sent to ' + lookup.username, true);
+    }
+
+    function acceptFriend(fromId) {
+      ws.send(JSON.stringify({ type: 'friend_accept', fromUserId: fromId }));
+      pendingRequests = pendingRequests.filter(p => p.userId !== fromId);
+      renderFriends();
+    }
+
+    let layoutPhone = null;
+    function onLayoutChange() {
+      const nowPhone = isPhoneLayout();
+      if (layoutPhone === nowPhone) return;
+      layoutPhone = nowPhone;
+      applyLayout();
+      if (nowPhone) {
+        document.getElementById('chat-panel').classList.remove('open');
+      } else {
+        document.getElementById('chat-panel').classList.add('open');
+      }
+    }
+    layoutPhone = isPhoneLayout();
+    applyLayout();
+    window.addEventListener('resize', () => { onLayoutChange(); updateNavInset(); });
+    window.addEventListener('orientationchange', () => setTimeout(() => { onLayoutChange(); updateNavInset(); }, 150));
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateNavInset);
+      window.visualViewport.addEventListener('scroll', updateNavInset);
+    }
+    updateNavInset();
+  </script>
+</body>
+</html>

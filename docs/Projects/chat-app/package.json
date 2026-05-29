@@ -1,0 +1,17 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "Self-hosted chat server with admin dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "node start.js",
+    "build:installer": "powershell -ExecutionPolicy Bypass -File build/package-portable.ps1"
+  },
+"dependencies": {
+  "dotenv": "^16.4.5",
+  "next": "14.2.3",
+  "ws": "^8.18.0",
+  "sqlite3": "^5.1.7"
+}
+}

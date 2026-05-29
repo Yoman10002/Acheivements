@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Dashboard</title>
+  <link rel="stylesheet" href="/theme.css">
+  <style>
+    html, body { overflow-x: hidden; overflow-y: auto; height: auto; min-height: 100%; -webkit-overflow-scrolling: touch; }
+    #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;}
+    #dashboard{display:none;max-width:980px;margin:0 auto;padding:1.5rem;padding-bottom:3rem;}
+    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center;}
+    .login-card input{width:100%;padding:.7rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;}
+    .login-card button{width:100%;padding:.7rem;background:var(--accent);border-radius:8px;font-weight:600;}
+    .dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem;}
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin-bottom:1.25rem;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem;}
+    .stat-card .label{font-size:.65rem;text-transform:uppercase;color:var(--muted);}
+    .stat-card .value{font-size:1.4rem;font-weight:700;}
+    .stat-card .sub{font-size:.72rem;color:var(--muted);}
+    .section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1rem;}
+    .section h2{font-size:.92rem;margin-bottom:.85rem;}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+    .form-group{display:flex;flex-direction:column;gap:.2rem;}
+    .form-group label{font-size:.72rem;color:var(--muted);}
+    .form-group input,.form-group select{padding:.5rem .7rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:.85rem;}
+    .btn{padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:600;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-outline{background:none;border:1px solid var(--border);color:var(--muted);}
+    .btn-danger{background:var(--danger);color:#fff;}
+    .btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;}
+    .storage-bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin:.5rem 0;}
+    .storage-bar .fill{height:100%;transition:width .4s;}
+    .capacity-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-top:.75rem;}
+    .capacity-box .big{font-size:1.1rem;font-weight:600;color:var(--accent);}
+    .warn-list{margin-top:.5rem;}
+    .warn-list li{font-size:.78rem;color:var(--warn);margin-left:1rem;}
+    .tab-bar{display:flex;gap:.25rem;margin-bottom:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+    .tab-btn{padding:.45rem .9rem;background:none;font-size:.8rem;color:var(--muted);border-bottom:2px solid transparent;}
+    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+    .tab-panel{display:none;}.tab-panel.active{display:block;}
+    .user-chip,.room-chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .7rem;background:var(--bg);border:1px solid var(--border);border-radius:99px;font-size:.78rem;margin:.2rem;}
+    .step{padding:.9rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;margin-bottom:.6rem;font-size:.8rem;color:var(--muted);}
+    .step h3{font-size:.85rem;color:var(--text);margin-bottom:.4rem;}
+    .step pre{background:var(--surface);padding:.6rem;border-radius:6px;margin:.4rem 0;overflow-x:auto;font-size:.75rem;}
+    .hint{font-size:.72rem;color:var(--muted);margin-top:.25rem;}
+    @media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body class="dashboard-app">
+  <div id="login-screen">
+    <div class="login-card">
+      <h1>Server Dashboard</h1>
+      <p style="color:var(--muted);font-size:.8rem;margin-bottom:1rem;">Admin password required</p>
+      <form id="login-form">
+        <input id="pw-input" type="password" placeholder="Admin password" autofocus>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="dashboard">
+    <div class="dash-header">
+      <h1>Server Dashboard</h1>
+      <div style="display:flex;gap:.5rem;">
+        <button class="btn btn-outline" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="label">Uptime</div><div class="value" id="s-uptime">--</div></div>
+      <div class="stat-card"><div class="label">Total users</div><div class="value" id="s-users-total">--</div></div>
+      <div class="stat-card"><div class="label">Online</div><div class="value" id="s-users-online" style="color:var(--success)">--</div></div>
+      <div class="stat-card"><div class="label">Offline</div><div class="value" id="s-users-offline">--</div></div>
+      <div class="stat-card"><div class="label">Connections</div><div class="value" id="s-conn">--</div><div class="sub" id="s-conn-sub"></div></div>
+      <div class="stat-card"><div class="label">Memory used</div><div class="value" id="s-mem">--</div><div class="sub" id="s-mem-limit"></div></div>
+    </div>
+
+    <div class="section">
+      <h2>Capacity estimate</h2>
+      <div class="capacity-box">
+        <div class="big" id="cap-summary">Loading...</div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:.4rem;" id="cap-detail"></p>
+        <ul class="warn-list" id="cap-warnings"></ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Storage <span id="storage-pct" style="font-size:.7rem;background:var(--accent);padding:.1rem .45rem;border-radius:99px;margin-left:.4rem;">--</span></h2>
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);">
+        <span id="storage-used">--</span><span id="storage-max">--</span>
+      </div>
+      <div class="storage-bar"><div class="fill" id="storage-fill" style="width:0;background:var(--accent);"></div></div>
+      <p class="hint">Current folder: <code id="storage-path">--</code></p>
+      <div class="form-group" style="margin-top:.75rem;">
+        <label>Move storage to another drive / USB / folder</label>
+        <input id="new-storage-path" type="text" placeholder="D:\ChatData or E:\USB\chat-data">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportData()">Export data folder (ZIP)</button>
+        <button class="btn btn-outline" onclick="moveStorage()">Move Storage</button>
+        <button class="btn btn-outline" onclick="purge(7)">Purge &gt;7 days</button>
+        <button class="btn btn-outline" onclick="purge(30)">Purge &gt;30 days</button>
+        <button class="btn btn-danger" onclick="purgeAll()">Delete all messages</button>
+      </div>
+      <p class="hint" style="margin-top:.5rem;">Export ZIP contains <code>chat.db</code> and all files — copy to the new server&apos;s storage folder (or use Move Storage there).</p>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab('settings',this)">Settings</button>
+      <button class="tab-btn" onclick="showTab('users',this)">Users</button>
+      <button class="tab-btn" onclick="showTab('rooms',this)">Rooms</button>
+      <button class="tab-btn" onclick="showTab('download',this)">Download</button>
+      <button class="tab-btn" onclick="showTab('setup',this)">Setup Guide</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-settings">
+      <div class="section">
+        <h2>Server resources</h2>
+        <div class="form-grid">
+          <div class="form-group"><label>Memory limit (MB) — restart required</label><input id="cfg-memory" type="number" min="64" max="2048" step="32"></div>
+          <div class="form-group"><label>Worker threads (1–4 for your CPU)</label><input id="cfg-threads" type="number" min="1" max="8"></div>
+          <div class="form-group"><label>Max connections</label><input id="cfg-maxconn" type="number" min="1" max="500"></div>
+          <div class="form-group"><label>Rate limit (msg/min per user)</label><input id="cfg-ratelimit" type="number" min="1" max="200"></div>
+          <div class="form-group"><label>Max storage (MB)</label><input id="cfg-storage" type="number" min="10" max="50000"></div>
+          <div class="form-group"><label>Auto-purge (days, 0=off)</label><input id="cfg-purge" type="number" min="0" max="3650"></div>
+          <div class="form-group"><label>New admin password</label><input id="cfg-pw" type="password" placeholder="Leave blank to keep"></div>
+        </div>
+        <p class="hint">Memory and threads apply after you restart the server (<code>npm start</code>).</p>
+        <div class="btn-row"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-users">
+      <div class="section">
+        <h2>All registered users</h2>
+        <div id="all-users-list" style="font-size:.8rem;"></div>
+      </div>
+      <div class="section">
+        <h2>Online now</h2>
+        <div id="user-list"></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-rooms">
+      <div class="section">
+        <h2>Rooms</h2>
+        <div id="room-list"></div>
+        <div style="display:flex;gap:.5rem;margin-top:.75rem;">
+          <input id="new-room" placeholder="room-name" style="flex:1;padding:.5rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;">
+          <button class="btn btn-primary" onclick="createRoom()">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-download">
+      <div class="section">
+        <h2>Download server package</h2>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;">
+          Build a portable ZIP you can copy to any Windows PC. Includes the chat server, dashboard, and a one-click <code>Start Chat Server.bat</code> launcher.
+          For a full <code>.exe</code> installer, install <a href="https://jrsoftware.org/isinfo.php" style="color:var(--accent);">Inno Setup</a> and run <code>build\build-installer.ps1</code>.
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="buildInstaller()">Build Portable Package</button>
+          <button class="btn btn-outline" id="btn-download" onclick="downloadZip()" disabled>Download ZIP</button>
+        </div>
+        <p class="hint" id="build-status"></p>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-setup">
+      <div class="section">
+        <h2>Setup on any computer</h2>
+        <div class="step"><h3>1. Install Node.js</h3><p>Download LTS from nodejs.org, or use the portable package from the Download tab.</p></div>
+        <div class="step"><h3>2. Start server</h3><pre>npm install
+npm start</pre><p>Chat: <code>http://localhost:3000</code> — Dashboard: <code>/dashboard</code></p></div>
+        <div class="step"><h3>3. Cloudflare Tunnel (internet access)</h3><pre>cloudflared tunnel --url http://localhost:3000</pre></div>
+        <div class="step"><h3>4. Migrate to a new server</h3>
+          <p>On the old server: Storage section → <b>Export data folder (ZIP)</b>.</p>
+          <p>On the new server: install the app, set storage path (or extract ZIP into <code>data</code> folder), then <code>npm start</code>.</p>
+        </div>
+        <div class="step"><h3>5. Run in background (optional)</h3><pre>npm install -g pm2
+pm2 start start.js --name chat
+pm2 save</pre></div>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <button type="button" class="theme-fab" id="theme-toggle" aria-label="Toggle theme">
+    <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z" fill="currentColor" stroke="none"/></svg>
+  </button>
+
+  <script>
+    let password = '', refreshTimer;
+    const ADMIN_KEY = 'chat-admin-session';
+
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('chat-theme', t);
+    }
+    applyTheme(localStorage.getItem('chat-theme') || 'dark');
+    document.getElementById('theme-toggle').onclick = () => {
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    };
+
+    function showDashboard() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    }
+
+    function startSession(pw) {
+      password = pw;
+      sessionStorage.setItem(ADMIN_KEY, pw);
+      api('stats').then(d => {
+        if (d.error) { sessionStorage.removeItem(ADMIN_KEY); return toast(d.error, true); }
+        showDashboard();
+        refresh(d);
+        clearInterval(refreshTimer);
+        refreshTimer = setInterval(() => api('stats').then(refresh), 3000);
+      });
+    }
+
+    document.getElementById('login-form').onsubmit = (e) => {
+      e.preventDefault();
+      startSession(document.getElementById('pw-input').value);
+    };
+
+    function logout() {
+      password = '';
+      sessionStorage.removeItem(ADMIN_KEY);
+      clearInterval(refreshTimer);
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('pw-input').value = '';
+    }
+
+    const savedAdmin = sessionStorage.getItem(ADMIN_KEY);
+    if (savedAdmin) startSession(savedAdmin);
+
+    async function api(route, body) {
+      const opts = { headers: { 'X-Admin-Password': password } };
+      if (body !== undefined) { opts.method = 'POST'; opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+      return fetch('/api/admin/' + route, opts).then(r => r.json());
+    }
+
+    function refresh(d) {
+      if (!d || d.error) return;
+      const h = Math.floor(d.uptime/3600), m = Math.floor((d.uptime%3600)/60);
+      document.getElementById('s-uptime').textContent = h ? h+'h '+m+'m' : m+'m';
+      document.getElementById('s-conn').textContent = d.connections;
+      document.getElementById('s-conn-sub').textContent = 'cap ~'+ (d.capacity?.recommendedOnline||'?') +' · max '+d.maxConnections;
+      document.getElementById('s-users-total').textContent = d.totalUsers;
+      document.getElementById('s-users-online').textContent = d.usersOnline ?? 0;
+      document.getElementById('s-users-offline').textContent = d.usersOffline ?? 0;
+      document.getElementById('s-mem').textContent = d.memoryMB+' MB';
+      document.getElementById('s-mem-limit').textContent = 'limit '+d.memoryLimitMB+' MB';
+
+      const c = d.capacity || {};
+      document.getElementById('cap-summary').textContent = c.summary || '';
+      document.getElementById('cap-detail').textContent =
+        `Comfortable: ~${c.conservativeOnline} users · Max estimate: ~${c.recommendedOnline} · `+
+        `~${c.messagesPerMinuteTotal} messages/min total · RAM allows ~${c.ramBasedUsers} · CPU allows ~${c.cpuBasedUsers}`;
+      document.getElementById('cap-warnings').innerHTML = (c.warnings||[]).map(w=>'<li>'+esc(w)+'</li>').join('');
+
+      const pct = d.maxStorageMB ? Math.min(100,(d.storageMB/d.maxStorageMB*100)).toFixed(1) : 0;
+      document.getElementById('storage-pct').textContent = pct+'%';
+      document.getElementById('storage-used').textContent = d.storageMB+' MB used';
+      document.getElementById('storage-max').textContent = d.maxStorageMB+' MB max';
+      document.getElementById('storage-path').textContent = d.storagePath;
+      document.getElementById('new-storage-path').placeholder = d.storagePath;
+      const fill = document.getElementById('storage-fill');
+      fill.style.width = pct+'%';
+      fill.style.background = pct>90?'var(--danger)':pct>70?'var(--warn)':'var(--accent)';
+
+      document.getElementById('cfg-memory').value = d.memoryLimitMB;
+      document.getElementById('cfg-threads').value = d.workerThreads;
+      document.getElementById('cfg-maxconn').value = d.maxConnections;
+      document.getElementById('cfg-ratelimit').value = d.rateLimitPerMin;
+      document.getElementById('cfg-storage').value = d.maxStorageMB;
+      document.getElementById('cfg-purge').value = d.autoPurgeDays;
+
+      document.getElementById('btn-download').disabled = !d.installerReady;
+
+      const ul = document.getElementById('user-list');
+      ul.innerHTML = d.onlineUsers.length ? d.onlineUsers.map(u =>
+        `<span class="user-chip"><b>${esc(u.username)}</b> <code>${esc(u.userId)}</code> #${esc(u.room)}
+         <button onclick="kick('${esc(u.userId)}')" title="Kick">⏏</button></span>`
+      ).join('') : '<span style="color:var(--muted);font-size:.8rem;">Nobody online</span>';
+
+      const all = document.getElementById('all-users-list');
+      all.innerHTML = (d.allUsers || []).length ? `<table style="width:100%;border-collapse:collapse;">
+        <tr style="color:var(--muted);text-align:left;"><th style="padding:.35rem">Name</th><th>ID</th><th>Status</th><th></th></tr>
+        ${d.allUsers.map(u => `<tr style="border-top:1px solid var(--border);">
+          <td style="padding:.4rem">${esc(u.username)}</td>
+          <td><code>${esc(u.id)}</code></td>
+          <td>${u.online ? '<span style="color:var(--success)">Online</span>' : 'Offline'}</td>
+          <td><button onclick="deleteUserAccount('${esc(u.id)}','${esc(u.username)}')" style="background:none;color:var(--danger);font-size:.75rem;">Delete</button></td>
+        </tr>`).join('')}
+      </table>` : '<span style="color:var(--muted);">No registered users</span>';
+
+      document.getElementById('room-list').innerHTML = d.rooms.map(r =>
+        `<span class="room-chip">#${esc(r.name)}${r.name!=='general'?`<button onclick="deleteRoom('${esc(r.name)}')" style="background:none;color:var(--danger);">×</button>`:''}</span>`
+      ).join('');
+    }
+
+    async function saveSettings() {
+      const body = {
+        memoryMB: +document.getElementById('cfg-memory').value,
+        workerThreads: +document.getElementById('cfg-threads').value,
+        maxConnections: +document.getElementById('cfg-maxconn').value,
+        rateLimitPerMin: +document.getElementById('cfg-ratelimit').value,
+        maxStorageMB: +document.getElementById('cfg-storage').value,
+        autoPurgeDays: +document.getElementById('cfg-purge').value,
+      };
+      const pw = document.getElementById('cfg-pw').value;
+      if (pw) { body.adminPassword = pw; password = pw; sessionStorage.setItem(ADMIN_KEY, pw); }
+      const r = await api('settings', body);
+      toast(r.needsRestart ? 'Saved. Restart server for memory/threads.' : 'Settings saved', false);
+    }
+
+    async function moveStorage() {
+      const p = document.getElementById('new-storage-path').value.trim();
+      if (!p) return toast('Enter a folder path', true);
+      const r = await api('storage/move', { path: p });
+      if (r.error) return toast(r.error, true);
+      toast('Storage moved to ' + r.storagePath, false);
+    }
+
+    async function purge(days) { const r = await api('purge',{days}); toast('Purged '+r.deleted+' messages'); }
+    async function purgeAll() {
+      if (!confirm('Delete ALL messages?')) return;
+      const r = await api('purge',{days:-1}); toast('Deleted '+r.deleted);
+    }
+    async function kick(id) { await api('kick',{userId:id}); toast('Kicked'); }
+    async function deleteUserAccount(id, name) {
+      if (!confirm('Delete account "' + name + '" (' + id + ')? This cannot be undone.')) return;
+      const r = await api('users/delete', { userId: id });
+      if (r.error) return toast(r.error, true);
+      toast('Account deleted', false);
+    }
+    async function exportData() {
+      toast('Preparing export...', false);
+      const res = await fetch('/api/admin/export-data', { headers: { 'X-Admin-Password': password } });
+      if (!res.ok) { const e = await res.json().catch(() => ({})); return toast(e.error || 'Export failed', true); }
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'chat-data-export.zip';
+      a.click();
+      toast('Export downloaded', false);
+    }
+    async function deleteRoom(n) { if(!confirm('Delete #'+n+'?'))return; await api('rooms/delete',{name:n}); }
+    async function createRoom() {
+      const n = document.getElementById('new-room').value.trim();
+      if(!n)return; await api('rooms/create',{name:n}); document.getElementById('new-room').value='';
+    }
+
+    async function buildInstaller() {
+      document.getElementById('build-status').textContent = 'Building... (may take a minute)';
+      const r = await api('build-installer', {});
+      if (r.error) { document.getElementById('build-status').textContent = r.error; return toast(r.error,true); }
+      document.getElementById('build-status').textContent = 'Ready!';
+      document.getElementById('btn-download').disabled = false;
+      toast('Package built', false);
+    }
+    async function downloadZip() {
+      const res = await fetch('/api/admin/download', { headers: { 'X-Admin-Password': password } });
+      if (!res.ok) return toast('Build the package first', true);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ChatServer-Portable.zip';
+      a.click();
+    }
+
+    function showTab(id, btn) {
+      document.querySelectorAll('.tab-btn,.tab-panel').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-'+id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+
+    function toast(msg, err) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'toast show' + (err?' error':'');
+      setTimeout(()=>t.classList.remove('show'), 2500);
+    }
+    function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  </script>
+</body>
+</html>
