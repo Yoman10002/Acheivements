@@ -1,4 +1,4 @@
-# 💻 Hardware Profile: Lenovo LOQ 2025
+# 💻 Hardware Profile: Lenovo LOQ 2024/2025
 
 **Role:** Primary Workstation (Future)  
 **Status:** Planning / Pre-Acquisition  
@@ -6,7 +6,7 @@
 ---
 
 ## 🎯 Selection Rationale
-Choosing a machine is a balance between raw performance and build longevity. While other models in this price bracket offered higher-tier GPUs (e.g., RTX 5060), I opted for the LOQ for specific engineering reasons:
+Choosing a machine is a balance between raw performance and build longevity. While other models in this price bracket offered higher-tier GPUs (e.g., RTX 5050), I opted for the LOQ for specific engineering reasons:
 
 *   **Chassis Integrity:** I prioritized thermal management and structural rigidity. A superior chassis ensures better airflow, which directly impacts sustained performance and hardware longevity.
 *   **Thermal Headroom:** By selecting the LOQ chassis, I am trading a marginal GPU tier increase for a more stable, cooler-running system.
@@ -17,10 +17,10 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 ## ⚙️ Specifications
 | Component | Specification |
 | :--- | :--- |
-| **CPU** | AMD Ryzen 7 |
-| **GPU** | NVIDIA RTX 5050 (8GB VRAM) |
-| **RAM** | 24GB |
-| **Storage** | 1TB NVMe SSD |
+| **CPU** | i7 13650hx |
+| **GPU** | NVIDIA RTX 4050 (6GB VRAM) |
+| **RAM** | 16GB |
+| **Storage** | 512GB NVMe SSD |
 | **Display** | 144Hz Panel |
 
 ---
@@ -32,7 +32,7 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 * [ ] **OS Clean Install:** Perform a fresh Windows 11 installation to strip manufacturer bloatware and achieve a "factory-clean" state.
 * [ ] **System Debloat:** Apply custom scripts to disable telemetry and non-essential background processes.
 
-### Phase 2: Linux Experimentation
+### Phase 2: Linux Experimentation  (Paused due to low storage, of 512GB)
 * [ ] **Fedora Workstation Deployment:** Partition the SSD to install Fedora Workstation.
 * [ ] **Workflow Evaluation:** Transition daily tasks to Linux to test stability, resource efficiency, and software compatibility compared to the Windows environment.
 * [ ] **Long-term Assessment:** Determine if Fedora meets the requirements for a daily driver to replace the Windows-dominant workflow.
