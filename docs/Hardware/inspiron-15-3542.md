@@ -53,4 +53,10 @@ Before this machine retires, it has one final mission:
 * **Result:** Restored full CPU clock speeds and normal operating performance.
 
 ---
-*Last Updated: 2026-05-29*
+
+Due to low storage capacity on the LOQ, the Linux Experimentation will continue on this device.
+## Linux Experimentation
+
+
+
+*Last Updated: 2026-06-15*
