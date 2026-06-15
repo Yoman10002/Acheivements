@@ -5,12 +5,12 @@ A collection of Python-based terminal games, including a main menu, memory chall
 * **Game Center (GC):** The main hub. A centralized menu to launch any of the integrated games.
 
 ## 🛠️ Requirements & Compatibility
-* **OS:** Windows (Required for audio playback functionality).
+* **OS:** Windows (Required for audio playback functionality), linux (these 2 are tested), etc.
 * **Language:** Python 3.x
 * **Dependencies:** Uses standard library modules for file I/O and audio triggers.
 
 ## 🚀 How to Play
-1. Ensure you are on a **Windows PC**.
+1. Open a terminal in the directory
 2. Run the main menu script:
    ```bash
    python "GameCenter(GC).py"
