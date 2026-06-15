@@ -55,8 +55,10 @@ Before this machine retires, it has one final mission:
 ---
 
 Due to low storage capacity on the LOQ, the Linux Experimentation will continue on this device.
+
 ## Linux Experimentation
-
-
+* [ ] **Fedora Workstation Deployment:** Install Fedora Workstation.
+* [ ] **Workflow Evaluation:** Test Linux for stability, resource efficiency, and software compatibility compared to the Windows environment.
+* [ ] **Long-term Assessment:** Determine if Fedora meets the requirements for a daily driver to replace the Windows-dominant workflow.
 
 *Last Updated: 2026-06-15*
