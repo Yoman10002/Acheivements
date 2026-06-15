@@ -29,8 +29,8 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 *To be populated upon acquisition.*
 
 ### Phase 1: Clean Slate
-* [ ] **OS Clean Install:** Perform a fresh Windows 11 installation to strip manufacturer bloatware and achieve a "factory-clean" state.
-* [ ] **System Debloat:** Apply custom scripts to disable telemetry and non-essential background processes.
+* [ ] **OS Clean Install:** Perform a fresh Windows 11 installation to strip manufacturer bloatware and achieve a "factory-clean" state. (failed)
+* [x] **System Debloat:** Apply custom scripts to disable telemetry and non-essential background processes.
 
 ### Phase 2: Linux Experimentation  (Paused due to low storage, of 512GB)
 * [ ] **Fedora Workstation Deployment:** Partition the SSD to install Fedora Workstation.
