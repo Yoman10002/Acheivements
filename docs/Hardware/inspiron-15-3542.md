@@ -17,6 +17,7 @@ My journey began with a machine most would have discarded years ago. This Dell I
 * **Hardship:** Hinges are broken, chassis held by tape, and it has survived viruses, OS corruption, and "impossible" Windows 11 updates on unsupported hardware.
 * **Mastery:** This machine forced me to learn. I learned to debloat Windows, bypass BIOS power locks (BD PROCHOT), and optimize everything to squeeze every ounce of performance out of the i3-4005U.
 * **The Record:** Max temp 83°C (pushing 20W TDP). Even today, it manages ~1-3 hours of light browsing on battery.
+* **More Info:**  For more info visit "https://www.reddit.com/r/pcmasterrace/s/SJdgqMd9Ua"
 
 ### Next Steps
 Before this machine retires, it has one final mission: 
