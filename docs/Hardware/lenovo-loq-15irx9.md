@@ -1,7 +1,7 @@
 # 💻 Hardware Profile: Lenovo LOQ 2024/2025
 
-**Role:** Primary Workstation (Future)  
-**Status:** Planning / Pre-Acquisition  
+**Role:** Primary Workstation  
+**Status:** Aquired  
 
 ---
 
@@ -26,7 +26,6 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 ---
 
 ## 📋 Maintenance & Configuration Log
-*To be populated upon acquisition.*
 
 ### Phase 1: Clean Slate
 * [ ] **OS Clean Install:** Perform a fresh Windows 11 installation to strip manufacturer bloatware and achieve a "factory-clean" state. (failed)
