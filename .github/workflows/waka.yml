@@ -11,4 +11,5 @@ jobs:
       - uses: athul/waka-readme@master
         with:
           WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
+        env:
           WAKATIME_API_URL: https://hackatime.hackclub.com/api/v1
