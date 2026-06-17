@@ -22,6 +22,7 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 | **RAM** | 16GB |
 | **Storage** | 512GB NVMe SSD |
 | **Display** | 144Hz Panel |
+| **Battery** | 63Whr |
 
 ---
 
@@ -35,6 +36,24 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 * [ ] **Fedora Workstation Deployment:** Partition the SSD to install Fedora Workstation.
 * [ ] **Workflow Evaluation:** Transition daily tasks to Linux to test stability, resource efficiency, and software compatibility compared to the Windows environment.
 * [ ] **Long-term Assessment:** Determine if Fedora meets the requirements for a daily driver to replace the Windows-dominant workflow.
+
+---
+
+## Battery Optimization
+
+**Goal:** Optimize laptop power consumption and battery management to extend operational duration during unplugged use.
+
+## Issues
+| Component | Technical Challenge |
+| :--- | :--- |
+| **CPU:** i7 13650hx | This chip has a substantial TDP of 50-100+, driving faster discharge. |
+| **Display:** 144Hz Panel | High refresh rates may increase gpu workloads, which may impact power draw. |
+| **Battery:** 63Wh | Relatively low battery capacity necessitates aggressive "Low-power" operations |
+
+## Solutions
+* **Processor -**
+  * **ThrottleStop:** using throttlestop successfully limited it to 15 watts.
+  
 
 ---
 *Last Updated: 2026-05-29*
