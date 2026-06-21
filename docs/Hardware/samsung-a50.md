@@ -13,6 +13,6 @@ Throughout the development cycle, several significant hurdles were addressed:
 ## Status: Paused
 The current development status is **Paused**. 
 
-While TWRP recovery has been successfully flashed and is operational, the decision was made to halt further modifications. As this device serves as my primary mobile communication tool, the risk of catastrophic system failure currently outweighs the benefits of the custom ROM implementation. Future efforts will resume only if a secondary device is acquired to serve as a stable testing platform.
+Due to technical difficulties that arised due to unofficial/wrong firmware i cannot install **TWRP**. So, the decision was made to halt further modifications. As this device serves as my primary mobile communication tool, the risk of catastrophic system failure currently outweighs the benefits of the custom ROM implementation. Future efforts will resume only if a secondary device is acquired to serve as a stable testing platform.
 
 *Last Updated: 2026-05-31*
