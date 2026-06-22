@@ -43,7 +43,7 @@ Welcome to my project space. This repository serves as a log of my technical jou
 | [ ] | Minecraft Datapacks | Custom toolset development (Incomplete) | 2025–2026 |
 | [ ] | Technical Certification | Seeking industry-recognized certifications | Future |
 
-**Note:** I have started to track coding activity via **Hackatime** on **16-06-2026**.
+**Note:** I have started to track coding activity via **Hackatime** on **16-06-2026**. Cannot be displayed due to technical difficulties.
 
 ## 📈 Coding Activity
 <!-- START_SECTION:waka -->
