@@ -64,5 +64,6 @@ Due to low storage capacity on the LOQ, the Linux Experimentation will continue 
 
 
 **Note:** on the **Linux Experimentation**, instead of focusing on fedora, i have decided to explore all the options available, before deciding on one.
-* Officially switched to **Fedora Workstation KDE plasma**
-*Last Updated: 2026-06-21*
+Officially switched to **Fedora Workstation KDE plasma**
+
+*Last Updated: 2026-07-20*
