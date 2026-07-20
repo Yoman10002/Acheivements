@@ -62,6 +62,7 @@ Due to low storage capacity on the LOQ, the Linux Experimentation will continue 
 * [ ] **Workflow Evaluation:** Test Linux for stability, resource efficiency, and software compatibility compared to the Windows environment.
 * [ ] **Long-term Assessment:** Determine if Fedora meets the requirements for a daily driver to replace the Windows-dominant workflow.
 
-**Note:** on the **Linux Experimentation**, instead of focusing on fedora, i have decided to explore all the options available, before deciding on one.
 
+**Note:** on the **Linux Experimentation**, instead of focusing on fedora, i have decided to explore all the options available, before deciding on one.
+* Officially switched to **Fedora Workstation KDE plasma**
 *Last Updated: 2026-06-21*
