@@ -59,7 +59,8 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 * **Power Settings (ThrottleStop):**
   * **Undervolt:** -135mv constant on Core and Cache. E-Cores kept at 0 mv for stability.
   * **V/F Point Customization:** Tuned specific Voltage/Frequency points across individual profiles to optimize voltage scaling under load.
-     ![V/F Point Customization](TS_V_F_Customization2.png)
+     ![V/F Point Customization](TS_V_F_Customization3.png)
+     *Profile 4 is used as Battery Profile*
   * **Other Settings:** Programmed strict power constraints (PL1/PL2 restricted to **15W** maxed out Speed Shift EPP to **255**. This successfully dropped        system idle power draw from **8–9W down to 6.6–7W**.
 
 * **Other Important Implementations(Lenovo Legion Toolkit):**
