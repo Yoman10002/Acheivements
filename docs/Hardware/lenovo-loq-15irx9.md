@@ -48,19 +48,29 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 | :--- | :--- |
 | **CPU:** i7-13650HX | Substantial baseline power draw; aggressive stock boost parameters accelerate battery drainage. |
 | **Display:** 144Hz Panel | High refresh rate increases baseline display engine power workloads. |
-| **Battery:** 63Whr | Restricted capacity requires aggressive low-power state management to achieve acceptable endurance. |
+| **Battery:** ~60Whr | Restricted capacity requires aggressive low-power state management to achieve acceptable endurance. |
 | **Firmware Limitations** | Lenovo OEM firmware locks custom fan curves out of the native "Silent" mode (forcing a constant ~2,000 RPM idle fan speed unplugged). Custom fan curves are only natively executable under AC power. |
 
 ## Implemented Solutions
+* **Software Used:**
+  * **ThrottleStop:** Well known tool in the community for **Undervolting**, and **Power Limits**. Required to tackle the **High power I7 HX**.
+  * **Lenovo Legion Toolkit:** Well known Tool in the community for the replacement for the **Stock Bloated Lenovo Vantage**, While being lighter and             providing additional options for macros, Actions, Current System Power Draw, etc.  
+
 * **Power Settings (ThrottleStop):**
   * **Undervolt:** -135mv constant on Core and Cache. E-Cores kept at 0 mv for stability.
   * **V/F Point Customization:** Tuned specific Voltage/Frequency points across individual profiles to optimize voltage scaling under load.
-    ![V/F Point Customization](TS_V/F.png)
-  * **Profile 4 (Battery / Power Saver):** Programmed strict power constraints (PL1/PL2 restricted to **25W/30W** with a 56-second turbo time limit) and maxed out Speed Shift EPP to **255**. This successfully dropped system idle power draw from **8–9W down to 6.6–7W**.
-  * **Profile 1 (High Performance):** Capped AC performance profile PL1/PL2 power limits at **50W** to rein in thermal throttling while retaining multi-core responsiveness.
+     ![V/F Point Customization](TS_V_F_Customization.png)
+  * **Other Settings:** Programmed strict power constraints (PL1/PL2 restricted to **15W** maxed out Speed Shift EPP to **255**. This successfully dropped        system idle power draw from **8–9W down to 6.6–7W**.
+
+* **Other Important Implementations(Lenovo Legion Toolkit):**
+  * **Actions:** 2 Actions were used. **When AC Power is connected** and **When AC Power is disconnected** to Automate Performance, and Battery without           having to manually do so.
+     * **When AC Power is connected:**
+        ![V/F Point Customization](TS_V_F_Customization.png)
+     * **When AC Power is disconnected:**
 * **Thermal Architecture & Fan Management (Lenovo Legion Toolkit):**
   * Engineered a custom fan curve mapping out acoustics and thermal dissipation thresholds for AC operation. 
   * *Note:* Because firmware blocks custom fan profiles on battery mode (forcing stock Silent mode's constant ~2,000 RPM), AC profile tuning achieves superior acoustic zero-RPM states when thermal loads permit, outperforming rigid OEM profiles.
+
 * **Real-World Endurance Metrics:**
   * Post-optimization, battery runtime improved dramatically from an initial **0.5–1 hour** window up to **2–2.5 hours** under mixed daily workflows (Edge browser with 3–4 tabs, Discord, and media playback), and reaching roughly **3 hours** under strict idle states.
 
