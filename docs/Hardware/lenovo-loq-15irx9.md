@@ -66,7 +66,7 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
   * **Actions:** 2 Actions were used. **When AC Power is connected** and **When AC Power is disconnected** to Automate Performance, and Battery without           having to manually do so.
         ![Actions for Max Performance](LLT_ACTIONS1.png)
         *"When AC Power is connected", the following is completed to ensure maximum performance. A.K.A revert all battery profile changes bellow.*
-        ![Actions for Max Performance](LLT_ACTIONS2.png)
+        ![Actions for Max Performance](LLT_ACTIONS3.png)
         *"When AC Power is disconnected", the following is completed to ensure lowest system power draw. Therefore, increasing battery life.*
         
 * **Thermal Architecture & Fan Management (Lenovo Legion Toolkit):**
