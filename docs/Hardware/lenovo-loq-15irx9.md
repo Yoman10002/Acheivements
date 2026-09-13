@@ -69,13 +69,9 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
         *"When AC Power is connected", the following is completed to ensure maximum performance. A.K.A revert all battery profile changes bellow.*
         ![Actions for Max Performance](LLT_ACTIONS3.png)
         *"When AC Power is disconnected", the following is completed to ensure lowest system power draw. Therefore, increasing battery life.*
-        
-* **Thermal Architecture & Fan Management (Lenovo Legion Toolkit):**
-  * Engineered a custom fan curve mapping out acoustics and thermal dissipation thresholds for AC operation. 
-  * *Note:* Because firmware blocks custom fan profiles on battery mode (forcing stock Silent mode's constant ~2,000 RPM), AC profile tuning achieves superior acoustic zero-RPM states when thermal loads permit, outperforming rigid OEM profiles.
 
 * **Real-World Endurance Metrics:**
-  * Post-optimization, battery runtime improved dramatically from an initial **0.5–1 hour** window up to **2–2.5 hours** under mixed daily workflows (Edge browser with 3–4 tabs, Discord, and media playback), and reaching roughly **3 hours** under strict idle states.
+  * Post-optimization, battery runtime improved dramatically from an initial **0.5–1 hour** window up to **2–2.5 hours** under mixed light daily workflows (Edge browser with 3–4 tabs, Discord, and media playback), and reaching roughly **3 hours** under strict idle states.
 
 ---
 *Last Updated: 2026-06-17*
