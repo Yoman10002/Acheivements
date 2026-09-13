@@ -74,4 +74,4 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
   * Post-optimization, battery runtime improved dramatically from an initial **0.5–1 hour** window up to **2–2.5 hours** under mixed light daily workflows (Edge browser with 3–4 tabs, Discord, and media playback), and reaching roughly **3 hours** under strict idle states.
 
 ---
-*Last Updated: 2026-06-17*
+*Last Updated: 2026-09-13*
