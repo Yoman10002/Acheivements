@@ -1,4 +1,4 @@
-# 💻 Hardware Profile: Lenovo LOQ 2024/2025
+# 💻 Hardware Profile: Lenovo LOQ 2025
 
 **Role:** Primary Workstation  
 **Status:** Aquired  
@@ -6,11 +6,11 @@
 ---
 
 ## 🎯 Selection Rationale
-Choosing a machine is a balance between raw performance and build longevity. While other models in this price bracket offered higher-tier GPUs (e.g., RTX 5050), I opted for the LOQ for specific engineering reasons:
+Choosing a machine is a balance between raw performance and build longevity. While other models in this price bracket offered higher-tier GPUs (e.g., RTX 5050), I opted for the LOQ for a few reasons:
 
-*   **Chassis Integrity:** I prioritized thermal management and structural rigidity. A superior chassis ensures better airflow, which directly impacts sustained performance and hardware longevity.
-*   **Thermal Headroom:** By selecting the LOQ chassis, I am trading a marginal GPU tier increase for a more stable, cooler-running system.
-*   **Longevity Strategy:** My goal is to maintain this machine for the long term. A robust build reduces the risk of the structural degradation (hinges/chassis fatigue) I experienced with my previous workstation.
+*   **Build Quality over Specs:** Picked a solid chassis over a slightly faster GPU. My old **Dell Inspiron 15 3542** literally fell apart(hinges snapped, body cracked) and I'm not doing that again. The LOQ actually feels sturdy enough to last a few years without disintegrating.
+*   **Thermal Headroom:** By selecting the LOQ chassis, I am trading a GPU tier increase for a much more stable and cooler system.
+*   **Longevity Strategy:** My goal is to maintain this machine for the long term. And both the above are important for keeping the machine alive for long.
 
 ---
 
@@ -22,7 +22,7 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 | **RAM** | 16GB DDR5 |
 | **Storage** | 512GB NVMe PCIe 4.0 SSD |
 | **Display** | 144Hz IPS Panel |
-| **Battery** | 63Whr |
+| **Battery** | ~60Whr |
 
 ---
 
@@ -41,15 +41,15 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 
 ## Battery Optimization & Low-Level Tuning
 
-**Goal:** Overcome high-TDP hardware limits (50W–100W+ envelope) and factory firmware restrictions to maximize efficiency and extend operational runtime during unplugged sessions.
+**Goal:** Reduce system power draw, Increase battery life.
 
 ## Technical Challenges & Bottlenecks
 | Component | Hardware Constraint |
 | :--- | :--- |
-| **CPU:** i7-13650HX | Substantial baseline power draw; aggressive stock boost parameters accelerate battery drainage. |
-| **Display:** 144Hz Panel | High refresh rate increases baseline display engine power workloads. |
-| **Battery:** ~60Whr | Restricted capacity requires aggressive low-power state management to achieve acceptable endurance. |
-| **Firmware Limitations** | Lenovo OEM firmware locks custom fan curves out of the native "Silent" mode (forcing a constant ~2,000 RPM idle fan speed unplugged). Custom fan curves are only natively executable under AC power. |
+| **CPU:** i7-13650HX | Very inefficient at low wattage, forcing it to draw more power. Thus reducing battery life. |
+| **Display:** 144Hz Panel | High Refresh rate increases panel power draw, and adds more work to the gpu. |
+| **Battery:** ~60Whr | Very low battery for a HX CPU, forcing for lower system draw over raw endurance. |
+| **Board Overhead:** VRM & Traces. | Desktop Class VRMS & Traces for the HX chip add ~3-5W extra over traditional laptops. |
 
 ## Implemented Solutions
 * **Software Used:**
