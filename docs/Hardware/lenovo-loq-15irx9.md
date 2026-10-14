@@ -81,7 +81,7 @@ Choosing a machine is a balance between raw performance and build longevity. Whi
 
 I did 2 things-
 * **Undervolting(more):** I undervolted System Agent, IGPU unslice and IGPU, to -70mv all.
-* **Manual Debloating:** I disabled a lot of services myself.. unfortunatly.. i stopped my wifi so i had to turn on every single wifi related services.
+* **Manual Debloating:** I disabled a lot of services myself.. unfortunatly.. It stopped my wifi so i had to turn on every single wifi related services.
 
 ---
 *Last Updated: 2026-09-13*
