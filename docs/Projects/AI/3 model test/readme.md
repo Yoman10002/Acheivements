@@ -12,10 +12,14 @@ all produced.. some codes..
 # Review of the games:
 
 * **deepseek r1 14B -**
+    * **Time:** 1m 47s
+    * **Token/s:** 17.33 tok/s 
     * color palette - it had a nice cyber theme, great attempt.
-    *  unfortunately failed as the "start game" button doees not work.
+    * unfortunately failed as the "start game" button doees not work.
 
 * **qwen 2.5 coder 7b -**
+     * **Time:** 22.5s
+     * **Token/s:** 34.51 tok/s
      * fabulous job for one prompt.
      * used neon-ish green and red for the theme
      * bit on the higher end in speed
@@ -23,6 +27,8 @@ all produced.. some codes..
      * hitting the edge ends the game and shows your finally score in a pop up with a ok button.
 
 * **llama 3.1 latest -**
+     * **Time:** 50.7s
+     * **Token/s:** 21.87 tok/s
      * uncentered screen
      * allows self cross over
      * white background, simple red and green colors
