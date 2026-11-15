@@ -13,198 +13,30 @@ all produced.. some codes..
 
 * **deepseek r1 14B -**
     * color palette - it had a nice cyber theme, great attempt.
-    
+    *  unfortunately failed as the "start game" button doees not work.
+
+* **qwen 2.5 coder 7b -**
+     * fabulous job for one prompt.
+     * used neon-ish green and red for the theme
+     * bit on the higher end in speed
+     * self cross over is not allowed
+     * hitting the edge ends the game and shows your finally score in a pop up with a ok button.
+
+* **llama 3.1 latest -**
+     * uncentered screen
+     * allows self cross over
+     * white background, simple red and green colors
+     * has a high score feature(which is only for that instance..)
+     * no popup after game over
+     * bigger arena
+     * similar speed?
 
 
 # **responses:**
 * **deepseek-r1 14B model -**
-``` bash
-Here's a complete, single-file HTML/JavaScript snake game with arcade colors:
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Snake Game</title>
-    <style>
-        body {
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            color: #fff;
-        }
-        #game-container {
-            margin-top: 20px;
-        }
-        #score {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #0ff;
-        }
-        canvas {
-            border: 2px solid #0ff;
-            background-color: #000;
-        }
-        #start-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #0ff;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #start-btn:hover {
-            background-color: #33f;
-        }
-    </style>
-</head>
-<body>
-    <div id="game-container">
-        <div id="score">Score: 0</div>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <button id="start-btn">Start Game</button>
-    </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const startBtn = document.getElementById('start-btn');
+**Code:** [deepseek snake code](deepseek.html)
 
-        const gridSize = 20;
-        const tileCount = canvas.width / gridSize;
-        
-        let snake = [];
-        let food = {};
-        let dx = gridSize;
-        let dy = 0;
-        let score = 0;
-        let gameLoop;
-        let gameSpeed = 100;
-        let gameStarted = false;
-
-        function initGame() {
-            snake = [{x: 5 * gridSize, y: 5 * gridSize}];
-            score = 0;
-            scoreElement.textContent = `Score: ${score}`;
-            createFood();
-            gameStarted = true;
-        }
-
-        function createFood() {
-            food = {
-                x: Math.floor(Math.random() * tileCount) * gridSize,
-                y: Math.floor(Math.random() * tileCount) * gridSize
-            };
-            // Make sure food doesn't appear on snake
-            for (let segment of snake) {
-                if (segment.x === food.x && segment.y === food.y) {
-                    createFood();
-                }
-            }
-        }
-
-        function drawGame() {
-            // Clear canvas
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw snake
-            snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? '#0f0' : '#0ff';
-                ctx.fillRect(segment.x, segment.y, gridSize - 2, gridSize - 2);
-            });
-
-            // Draw food
-            ctx.fillStyle = '#f0f';
-            ctx.fillRect(food.x, food.y, gridSize - 2, gridSize - 2);
-        }
-
-        function moveSnake() {
-            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
-            
-            // Check if game over (wall or self)
-            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height ||
-                snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-                gameOver();
-                return;
-            }
-
-            snake.unshift(head);
-
-            // Check if food eaten
-            if (head.x === food.x && head.y === food.y) {
-                score += 10;
-                scoreElement.textContent = `Score: ${score}`;
-                createFood();
-            } else {
-                snake.pop();
-            }
-        }
-
-        function gameOver() {
-            clearInterval(gameLoop);
-            gameStarted = false;
-            alert(`Game Over! Score: ${score}`);
-            startBtn.style.display = 'block';
-        }
-
-        function gameLoop() {
-            moveSnake();
-            drawGame();
-        }
-
-        // Handle keyboard input
-        document.addEventListener('keydown', (e) => {
-            if (!gameStarted) return;
-
-            switch(e.key) {
-                case 'ArrowUp':
-                    if (dy !== gridSize) { // Prevent going opposite direction
-                        dx = 0;
-                        dy = -gridSize;
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (dy !== -gridSize) {
-                        dx = 0;
-                        dy = gridSize;
-                    }
-                    break;
-                case 'ArrowLeft':
-                    if (dx !== gridSize) {
-                        dx = -gridSize;
-                        dy = 0;
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (dx !== -gridSize) {
-                        dx = gridSize;
-                        dy = 0;
-                    }
-                    break;
-            }
-        });
-
-        startBtn.addEventListener('click', () => {
-            if (!gameStarted) {
-                clearInterval(gameLoop);
-                initGame();
-                gameLoop = setInterval(gameLoop, gameSpeed);
-                startBtn.style.display = 'none';
-            }
-        });
-
-        // Initialize game
-        initGame();
-    </script>
-</body>
-</html>
-```
 This is a complete, self-contained snake game with the following features:
 1. Neon color scheme reminiscent of arcade games
 2. Score tracking
@@ -222,4 +54,26 @@ To play:
 6. Avoid hitting the walls or yourself
 
 The snake will be green (with the head in light green), and the food will be cyan on a black background. The score is shown in blue above the game board.
+
+![deepseek attempt](deepseek_snake.png)
+
+
+* **qwen coder 2.5 7B -**
+
+**Code:** [qwen coder 2.5 7B](qwen2_5_coder.html)
+
+***Note:** qwen coder outputed this without formating. the above is the code after reformat. also it did not put it inside a "```bash".. and originally it looked like this...(added it into bash for easier access )*
+
+```bash
+{"name": "store", "arguments": {"action": "store", "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Snake Game</title>\n<style>\n  body {\n    margin: 0;\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    height: 100vh;\n    background-color: #000;\n  }\n  canvas {\n    border: 1px solid #fff;\n  }\n</style>\n</head>\n<body>\n<canvas id=\"gameCanvas\" width=\"400\" height=\"400\"></canvas>\n<script>\n  const canvas = document.getElementById('gameCanvas');\n  const ctx = canvas.getContext('2d');\n  const scale = 20;\n  const rows = canvas.height / scale;\n  const columns = canvas.width / scale;\n\n  const directions = {\n    ArrowUp: { x: 0, y: -1 },\n    ArrowDown: { x: 0, y: 1 },\n    ArrowLeft: { x: -1, y: 0 },\n    ArrowRight: { x: 1, y: 0 }\n  };\n\n  let snake = [{ x: 10, y: 10 }];\n  let direction = directions.ArrowRight;\n  let food = { x: Math.floor(Math.random() * columns), y: Math.floor(Math.random() * rows) };\n  let score = 0;\n\n  function draw() {\n    ctx.clearRect(0, 0, canvas.width, canvas.height);\n\n    snake.forEach(segment => {\n      ctx.fillStyle = '#0f0';\n      ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);\n    });\n\n    ctx.fillStyle = '#f00';\n    ctx.fillRect(food.x * scale, food.y * scale, scale, scale);\n\n    ctx.fillStyle = '#fff';\n    ctx.font = '20px Arial';\n    ctx.fillText(`Score: ${score}`, 10, 20);\n  }\n\n  function update() {\n    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };\n\n    if (head.x === food.x && head.y === food.y) {\n      food = { x: Math.floor(Math.random() * columns), y: Math.floor(Math.random() * rows) };\n      score++;\n    } else {\n      snake.pop();\n    }\n\n    if (head.x < 0 || head.x >= columns || head.y < 0 || head.y >= rows || snake.some(segment => segment.x === head.x && segment.y === head.y)) {\n      alert(`Game Over! Your score: ${score}\nClick to play again!`);\n      location.reload();\n      return;\n    }\n\n    snake.unshift(head);\n  }\n\n  function gameLoop() {\n    update();\n    draw();\n    setTimeout(gameLoop, 100);\n  }\n\n  document.addEventListener('keydown', event => {\n    direction = directions[event.key];\n  });\n\n  gameLoop();\n</script>\n</body>\n</html>"}}
 ```
+
+![qwen attempt](qwen2_5_coder.png)
+
+* **llama 3.1 latest -**
+
+**Code:** [llama 3.1 latest](llama3_1_latest.html)
+
+This code creates a canvas element and gets the 2D drawing context. It then defines the snake and food variables, as well as the movement and score variables. The game loop function is defined, which clears the canvas, draws the snake and food, updates the snake position, checks for collision with food or wall, and updates the score display. The event listeners for keyboard input are added, and the game loop is started.
+
+![llama 3.1 latest attempt](llama3_1_latest.png)
